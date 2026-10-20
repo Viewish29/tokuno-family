@@ -40,6 +40,15 @@
 #chat-list .message.mine{width:100%;justify-content:flex-end!important}#chat-list .message.mine>.msg-content{margin-left:auto;align-items:flex-end}#chat-list .message:not(.mine)>.msg-content{margin-right:auto}#chat-list .message .bubble{width:fit-content;max-width:100%}
 .calendar-date{cursor:pointer;color:var(--ink);font:inherit;display:block;width:100%;transition:background .15s,border-color .15s}.calendar-date.selected{background:#f8c4d6;border:2px solid #e87b9d;color:#713c53;font-weight:800}.calendar-date.selected i{background:#b34f70}
 </style>
+<style id="calendar-jump-styles">
+.calendar-jump-trigger{border:0;background:transparent;color:var(--ink);font-weight:700;font-size:16px;padding:9px 12px;border-radius:12px;cursor:pointer}
+.calendar-jump-trigger:focus-visible{outline:2px solid var(--pink)}
+.calendar-jump{background:var(--soft);border:1px solid var(--line);border-radius:15px;padding:12px;margin-top:11px}
+.calendar-jump label{display:block;font-size:12px;margin-bottom:8px;font-weight:700;color:var(--ink)}
+.calendar-jump-row{display:flex;gap:9px;align-items:center}
+.calendar-jump-row input{flex:1;min-width:0;padding:10px;background:white;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink)}
+.calendar-jump-row button{border:0;border-radius:10px;background:var(--pink);color:white;padding:11px 15px;font-weight:700;white-space:nowrap}
+</style>
 </head>
 <body>
 <div id="auth-lock" style="display:flex;min-height:100dvh;align-items:center;justify-content:center;padding:24px;background:#fff3f7">
@@ -54,7 +63,7 @@
 <div id="home" class="page active"><section class="hero"><div class="spark">✦ ♡</div><p>사쿠야 · 유우시 · 치아키<br>유우키 · 아쿠토 · 쿄우야<br>함께 쌓아가는 여섯 명의 이야기</p></section><div class="content"><div class="grid"><button class="tile" onclick="page('chat')"><span class="emoji">💬</span><div><b>가족 채팅</b><br><small>여섯 명의 수다</small></div></button><button class="tile" onclick="page('photos')"><span class="emoji">📸</span><div><b>가족 사진첩</b><br><small>간직하고 싶은 순간</small></div></button><button class="tile" onclick="page('calendar')"><span class="emoji">🗓️</span><div><b>가족 일정</b><br><small>잊지 못할 날들</small></div></button><button class="tile" onclick="page('board')"><span class="emoji">📝</span><div><b>가족 게시판</b><br><small>일상과 메모</small></div></button></div><div class="section-head"><h2>💌 최근 가족 소식</h2></div><div id="home-feed"></div></div></div>
 <main class="content"><section id="chat" class="page"><div class="page-head"><h2>💬 가족 채팅</h2><span class="count" id="chat-count"></span></div><div id="chat-list"></div><div class="chat-compose"><div class="chat-input-row"><textarea class="area" id="chat-text" rows="1" placeholder="메시지 입력..."></textarea><button class="solid chat-send" onclick="sendChat()" aria-label="메시지 보내기">➤</button></div></div></section>
 <section id="photos" class="page"><div class="page-head"><h2>📸 가족 사진첩</h2><button class="pill" onclick="openForm('photo')">+ 사진 올리기</button></div><div class="chips" id="photo-filter"></div><div id="photo-list" class="photo-grid"></div></section>
-<section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><b id="month-title"></b><button onclick="changeMonth(1)">›</button></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
+<section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><button type="button" id="month-title" class="calendar-jump-trigger" onclick="toggleCalendarJump()" aria-label="연도 월 날짜 선택">2037년 1월 <span aria-hidden="true">⌄</span></button><button onclick="changeMonth(1)">›</button></div><div class="calendar-jump hide" id="calendar-jump"><label for="calendar-jump-date">이동할 날짜 선택</label><div class="calendar-jump-row"><input type="date" id="calendar-jump-date" min="1900-01-01" max="2100-12-31"><button type="button" onclick="jumpToCalendarDate()">이동</button></div></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
 <section id="board" class="page"><div class="page-head"><h2>📝 가족 게시판</h2><button class="pill" onclick="openForm('post')">+ 글쓰기</button></div><div id="post-list"></div></section></main>
 <footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button id="logout-btn" class="quiet" type="button">로그아웃</button></div></div>
 <nav class="nav"><button data-tab="home" class="active" onclick="page('home')"><span>🏠</span>홈</button><button data-tab="chat" onclick="page('chat')"><span>💬</span>채팅</button><button data-tab="photos" onclick="page('photos')"><span>📸</span>사진첩</button><button data-tab="calendar" onclick="page('calendar')"><span>🗓️</span>일정</button><button data-tab="board" onclick="page('board')"><span>📝</span>게시판</button></nav>
@@ -63,7 +72,7 @@
 </div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
-const people=['사쿠야','유우시','치아키','유우키','아쿠토','쿄우야'];const emojis={'사쿠야':'🤎','유우시':'🐈','치아키':'🌷','유우키':'⭐','아쿠토':'⚽','쿄우야':'🧸','가족 전체':'🏠'};const SUPABASE_URL='https://okkwmosskdoucetjlqqy.supabase.co';
+const people=['사쿠야','유우시','치아키','유우키','아쿠토','쿄우야'];const emojis={'사쿠야':'🐼','유우시':'🐈','치아키':'🐑','유우키':'⭐','아쿠토':'🐳','쿄우야':'🐣','가족 전체':'🏠'};const SUPABASE_URL='https://okkwmosskdoucetjlqqy.supabase.co';
 const SUPABASE_KEY='sb_publishable_84MTX-t2ngISotKfMrmwfQ_RHy2Zpue';
 if(!window.supabase){document.getElementById('auth-error').textContent='앱을 불러오지 못했어요. 파일 미리보기가 아닌 GitHub Pages 주소를 Safari에서 열어 주세요.'; throw new Error('Supabase library unavailable');}
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
@@ -199,6 +208,24 @@ async function seedSchoolEventsOnFirstLogin(){
  await addSchoolEvents(true);
 }
 
+function toggleCalendarJump(){
+ const panel=document.getElementById('calendar-jump');
+ const willOpen=panel.classList.contains('hide');
+ panel.classList.toggle('hide',!willOpen);
+ if(willOpen){
+  document.getElementById('calendar-jump-date').value=selectedCalendarDate||`${year}-${String(month+1).padStart(2,'0')}-01`;
+ }
+}
+function jumpToCalendarDate(){
+ const value=document.getElementById('calendar-jump-date').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(value)){alert('이동할 날짜를 선택해 주세요.');return;}
+ const [y,m,d]=value.split('-').map(Number);
+ const parsed=new Date(y,m-1,d);
+ if(parsed.getFullYear()!==y||parsed.getMonth()!==m-1||parsed.getDate()!==d){alert('날짜를 다시 확인해 주세요.');return;}
+ year=y;month=m-1;selectedCalendarDate=value;
+ document.getElementById('calendar-jump').classList.add('hide');
+ renderCalendar();
+}
 function selectCalendarDay(iso){selectedCalendarDate=iso;renderCalendar();}
 function showAllMonthEvents(){selectedCalendarDate=null;renderCalendar();}
 function renderCalendar(){
