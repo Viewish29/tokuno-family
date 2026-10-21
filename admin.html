@@ -188,7 +188,7 @@ function renderCommunity(){
   const items=communityEntries.filter(x=>x.kind===kind);
   target.innerHTML=items.length?items.map(x=>{
    const actionButtons=isAdmin?`<div class="moderation"><button class="secondary" onclick="setCommunityApproval('${x.id}',${!x.approved})">${x.approved?'비공개':'공개 승인'}</button><button class="secondary" onclick="replyCommunity('${x.id}')">${x.reply_body?'답장 수정':'답장하기'}</button><button class="secondary" onclick="deleteCommunity('${x.id}')">삭제</button></div>`:'';
-   const replyPart=x.reply_body?`<div class="community-reply"><b>${emojis[x.reply_author]||'💗'} ${esc(x.reply_author||'가족')}의 답장</b><p>${esc(x.reply_body)}</p></div>`:'';
+   const replyPart=x.reply_body?`<div class="community-reply"><b>🐼 사쿠야의 답장</b><p>${esc(x.reply_body)}</p></div>`:'';
    return `<article class="card community-entry ${x.approved?'':'pending'}"><div class="person"><span class="avatar">${kind==='question'?'❓':'💌'}</span><div><b>${esc(x.nickname)}</b><div class="meta">${kind==='question'?'받는 사람: '+esc(x.recipient||'가족 전체')+' · ':''}${stamp(x.created_at)}${x.approved?'':' · 승인 대기'}</div></div></div><div class="text" style="margin-top:12px">${esc(x.body)}</div>${replyPart}${actionButtons}</article>`;
   }).join(''):'<div class="community-empty">'+(kind==='question'?'아직 공개된 질문이 없어요.':'아직 공개된 방명록이 없어요.')+'</div>';
  }
