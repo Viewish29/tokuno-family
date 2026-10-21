@@ -72,13 +72,14 @@ body:not(.is-admin) .message {user-select:text;-webkit-user-select:text}
 <section id="photos" class="page"><div class="page-head"><h2>📸 가족 사진첩</h2><button class="pill" onclick="openForm('photo')">+ 사진 올리기</button></div><div class="chips" id="photo-filter"></div><div id="photo-list" class="photo-grid"></div></section>
 <section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><button type="button" id="month-title" class="calendar-jump-trigger" onclick="toggleCalendarJump()" aria-label="연도 월 날짜 선택">2037년 10월 21일 <span aria-hidden="true">⌄</span></button><button onclick="changeMonth(1)">›</button></div><div class="calendar-jump hide" id="calendar-jump"><label for="calendar-jump-date">이동할 날짜 선택</label><div class="calendar-jump-row"><input type="date" id="calendar-jump-date" min="1900-01-01" max="2100-12-31"><button type="button" onclick="jumpToCalendarDate()">이동</button></div></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
 <section id="board" class="page"><div class="page-head"><h2>📝 가족 게시판</h2><button class="pill" onclick="openForm('post')">+ 글쓰기</button></div><div id="post-list"></div></section></main>
-<footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button id="admin-access-btn" class="quiet" type="button" onclick="showAdminLogin()">관리자 로그인</button><button id="logout-btn" class="quiet" type="button" style="display:none">로그아웃</button></div></div>
+<footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button style="display:none" id="admin-access-btn" class="quiet" type="button" onclick="showAdminLogin()">관리자 로그인</button><button hidden id="logout-btn" class="quiet" type="button" style="display:none">로그아웃</button></div></div>
 <nav class="nav"><button data-tab="home" class="active" onclick="page('home')"><span>🏠</span>홈</button><button data-tab="chat" onclick="page('chat')"><span>💬</span>채팅</button><button data-tab="photos" onclick="page('photos')"><span>📸</span>사진첩</button><button data-tab="calendar" onclick="page('calendar')"><span>🗓️</span>일정</button><button data-tab="board" onclick="page('board')"><span>📝</span>게시판</button></nav>
 <div id="chat-menu" class="chat-menu-backdrop" onclick="if(event.target===this)closeChatMenu()"><div class="chat-menu-sheet" role="dialog" aria-modal="true" aria-label="메시지 관리"><div class="meta" id="chat-menu-summary"></div><button onclick="chatMenuEdit()">✏️ 메시지·날짜 수정</button><button onclick="chatMenuDelete()" class="danger">🗑️ 메시지 삭제</button><button onclick="closeChatMenu()">취소</button></div></div>
 <div id="overlay" class="overlay" onclick="if(event.target===this)closeForm()"><div class="modal"><div class="modal-title"><h2 id="modal-title">작성하기</h2><button class="x" onclick="closeForm()">×</button></div><form id="entry-form" class="stack" onsubmit="saveForm(event)"><div id="field-author"><label class="label">작성자</label><select id="form-author"></select></div><div id="field-title"><label class="label">제목</label><input id="form-title" class="field" maxlength="120" placeholder="제목 입력"></div><div id="field-date"><label class="label">날짜</label><input id="form-date" class="field" type="date"></div><div id="field-chat-datetime" class="hide"><label class="label" for="form-chat-datetime">메시지 날짜 · 시간</label><input class="field" id="form-chat-datetime" type="datetime-local"></div><div id="field-person"><label class="label">사진첩 분류</label><select id="form-person"></select></div><div id="field-body"><label class="label" id="body-label">내용</label><textarea id="form-body" class="area" placeholder="내용을 적어주세요"></textarea></div><div id="field-file"><label class="label">사진 (최대 8MB)</label><input id="form-file" class="field" type="file" accept="image/*"><p class="notice">업로드한 사진은 방문자에게도 공개됩니다.</p></div><div class="btnline"><button type="button" class="secondary" onclick="closeForm()">취소</button><button class="solid" type="submit">저장하기</button></div></form></div></div>
 </div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
+const ADMIN_PAGE=false;
 const people=['사쿠야','유우시','치아키','유우키','아쿠토','쿄우야'];const emojis={'사쿠야':'🐼','유우시':'🐈','치아키':'🐑','유우키':'⭐','아쿠토':'🐳','쿄우야':'🐣','가족 전체':'🏠'};const SUPABASE_URL='https://okkwmosskdoucetjlqqy.supabase.co';
 const SUPABASE_KEY='sb_publishable_84MTX-t2ngISotKfMrmwfQ_RHy2Zpue';
 if(!window.supabase){document.getElementById('auth-error').textContent='앱을 불러오지 못했어요. 파일 미리보기가 아닌 GitHub Pages 주소를 Safari에서 열어 주세요.'; throw new Error('Supabase library unavailable');}
@@ -94,10 +95,10 @@ function toggleLogin(show){
 }
 function updateAdminUI(){
  document.body.classList.toggle('is-admin',isAdmin);
- document.getElementById('admin-access-btn').style.display=isAdmin?'none':'inline-block';
- document.getElementById('logout-btn').style.display=isAdmin?'inline-block':'none';
+ document.getElementById('admin-access-btn').style.display='none';
+ document.getElementById('logout-btn').style.display=(ADMIN_PAGE&&isAdmin)?'inline-block':'none';
 }
-function showAdminLogin(){toggleLogin(true)}
+function showAdminLogin(){if(ADMIN_PAGE)toggleLogin(true)}
 async function login(e){
  e.preventDefault();
  const email=document.getElementById('auth-email').value.trim();
@@ -109,19 +110,19 @@ async function login(e){
  await startup();
 }
 async function logout(){
- await db.auth.signOut();isAdmin=false;updateAdminUI();toggleLogin(false);await refresh();
+ await db.auth.signOut();isAdmin=false;updateAdminUI();toggleLogin(ADMIN_PAGE);await refresh();
 }
 async function startup(){
  const {data:sessionData}=await db.auth.getUser();
  isAdmin=false;
  if(sessionData?.user){
   const {data:ok,error:checkError}=await db.rpc('is_sorotte_admin');
-  isAdmin=!!ok&&!checkError;
+  isAdmin=ADMIN_PAGE&&!!ok&&!checkError;
  }
  updateAdminUI();
- toggleLogin(false);
+ toggleLogin(ADMIN_PAGE&&!isAdmin);
  await refresh();
- if(isAdmin){await seedFixturesOnFirstLogin();await seedSchoolEventsOnFirstLogin();await cleanOldEventNotes();}
+ if(ADMIN_PAGE&&isAdmin){await seedFixturesOnFirstLogin();await seedSchoolEventsOnFirstLogin();await cleanOldEventNotes();}
 }
 async function refresh(){notify('동기화 중...');const {data:rows,error}=await db.from('sorotte_items').select('*').order('created_at',{ascending:true});
  if(error){notify('데이터를 불러오지 못했어요. SQL 설정을 확인해 주세요: '+error.message);return;}
@@ -333,7 +334,7 @@ async function saveForm(e){e.preventDefault();if(!isAdmin)return;const type=form
 for(const id of ['family-profile','form-author'])document.getElementById(id).innerHTML=people.map(p=>`<option value="${p}">${emojis[p]} ${p}</option>`).join('');document.getElementById('family-profile').value=currentFamily;document.getElementById('form-person').innerHTML=['가족 전체',...people].map(p=>`<option value="${p}">${emojis[p]} ${p}</option>`).join('');
 document.getElementById('auth-form').addEventListener('submit',login);
 document.getElementById('logout-btn').addEventListener('click',logout);
-db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){isAdmin=false;updateAdminUI();toggleLogin(false);refresh();}});
+db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){isAdmin=false;updateAdminUI();toggleLogin(ADMIN_PAGE);refresh();}});
 window.addEventListener('focus',()=>{refresh()});
 startup().catch(err=>{notify('연결 오류: '+err.message);toggleLogin(false);});
 </script>
