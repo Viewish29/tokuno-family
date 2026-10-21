@@ -39,6 +39,13 @@
 
 #chat-list .message.mine{width:100%;justify-content:flex-end!important}#chat-list .message.mine>.msg-content{margin-left:auto;align-items:flex-end}#chat-list .message:not(.mine)>.msg-content{margin-right:auto}#chat-list .message .bubble{width:fit-content;max-width:100%}
 .calendar-date{cursor:pointer;color:var(--ink);font:inherit;display:block;width:100%;transition:background .15s,border-color .15s}.calendar-date.selected{background:#f8c4d6;border:2px solid #e87b9d;color:#713c53;font-weight:800}.calendar-date.selected i{background:#b34f70}
+
+body:not(.is-admin) .chat-compose,
+body:not(.is-admin) .page-head .pill,
+body:not(.is-admin) .actions,
+body:not(.is-admin) .fixture-controls,
+body:not(.is-admin) .school-controls {display:none!important}
+body:not(.is-admin) .message {user-select:text;-webkit-user-select:text}
 </style>
 <style id="calendar-jump-styles">
 .calendar-jump-trigger{border:0;background:transparent;color:var(--ink);font-weight:700;font-size:16px;padding:9px 12px;border-radius:12px;cursor:pointer}
@@ -51,24 +58,24 @@
 </style>
 </head>
 <body>
-<div id="auth-lock" style="display:flex;min-height:100dvh;align-items:center;justify-content:center;padding:24px;background:#fff3f7">
+<div id="auth-lock" style="display:none;min-height:100dvh;align-items:center;justify-content:center;padding:24px;background:#fff3f7">
  <form id="auth-form" style="width:min(400px,100%);background:white;padding:30px 22px;border-radius:24px;box-shadow:0 12px 32px #e9c5d430">
  <div style="font-size:13px;color:#e87b9d;font-weight:700">TOKUNO FAMILY</div><h1 style="margin:10px 0">6人揃って</h1>
- <p style="color:#947f88;font-size:13px">가족 전용 공간 · 관리자 로그인</p>
+ <p style="color:#947f88;font-size:13px">관리자 전용 로그인 · 방문자는 로그인하지 않아도 볼 수 있어요</p>
  <label class="label">이메일</label><input id="auth-email" class="field" type="email" autocomplete="username" required>
  <label class="label" style="margin-top:14px">비밀번호</label><input id="auth-password" class="field" type="password" autocomplete="current-password" required>
  <button class="solid" style="width:100%;margin-top:18px" type="submit">로그인</button>
  <div id="auth-error" style="margin-top:10px;color:#b65879;font-size:12px"></div></form></div>
-<div id="app-shell" style="display:none"><div class="shell"><header class="top"><div class="tiny">TOKUNO FAMILY</div><h1>6人揃って</h1><div class="sub">우리 여섯의 소소하고 사랑스러운 하루 ♡</div><div class="profile-chooser"><label for="family-profile">지금 사용하는 가족</label><select id="family-profile" onchange="selectFamily(this.value)"></select></div></header>
+<div id="app-shell" style="display:block"><div class="shell"><header class="top"><div class="tiny">TOKUNO FAMILY</div><h1>6人揃って</h1><div class="sub">우리 여섯의 소소하고 사랑스러운 하루 ♡</div><div class="profile-chooser"><label for="family-profile">지금 사용하는 가족</label><select id="family-profile" onchange="selectFamily(this.value)"></select></div></header>
 <div id="home" class="page active"><section class="hero"><div class="spark">✦ ♡</div><p>사쿠야 · 유우시 · 치아키<br>유우키 · 아쿠토 · 쿄우야<br>함께 쌓아가는 여섯 명의 이야기</p></section><div class="content"><div class="grid"><button class="tile" onclick="page('chat')"><span class="emoji">💬</span><div><b>가족 채팅</b><br><small>여섯 명의 수다</small></div></button><button class="tile" onclick="page('photos')"><span class="emoji">📸</span><div><b>가족 사진첩</b><br><small>간직하고 싶은 순간</small></div></button><button class="tile" onclick="page('calendar')"><span class="emoji">🗓️</span><div><b>가족 일정</b><br><small>잊지 못할 날들</small></div></button><button class="tile" onclick="page('board')"><span class="emoji">📝</span><div><b>가족 게시판</b><br><small>일상과 메모</small></div></button></div><div class="section-head"><h2>💌 최근 가족 소식</h2></div><div id="home-feed"></div></div></div>
 <main class="content"><section id="chat" class="page"><div class="page-head"><h2>💬 가족 채팅</h2><span class="count" id="chat-count"></span></div><div id="chat-list"></div><div class="chat-compose"><div class="chat-input-row"><textarea class="area" id="chat-text" rows="1" placeholder="메시지 입력..."></textarea><button class="solid chat-send" onclick="sendChat()" aria-label="메시지 보내기">➤</button></div></div></section>
 <section id="photos" class="page"><div class="page-head"><h2>📸 가족 사진첩</h2><button class="pill" onclick="openForm('photo')">+ 사진 올리기</button></div><div class="chips" id="photo-filter"></div><div id="photo-list" class="photo-grid"></div></section>
-<section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><button type="button" id="month-title" class="calendar-jump-trigger" onclick="toggleCalendarJump()" aria-label="연도 월 날짜 선택">2037년 1월 <span aria-hidden="true">⌄</span></button><button onclick="changeMonth(1)">›</button></div><div class="calendar-jump hide" id="calendar-jump"><label for="calendar-jump-date">이동할 날짜 선택</label><div class="calendar-jump-row"><input type="date" id="calendar-jump-date" min="1900-01-01" max="2100-12-31"><button type="button" onclick="jumpToCalendarDate()">이동</button></div></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
+<section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><button type="button" id="month-title" class="calendar-jump-trigger" onclick="toggleCalendarJump()" aria-label="연도 월 날짜 선택">2037년 10월 21일 <span aria-hidden="true">⌄</span></button><button onclick="changeMonth(1)">›</button></div><div class="calendar-jump hide" id="calendar-jump"><label for="calendar-jump-date">이동할 날짜 선택</label><div class="calendar-jump-row"><input type="date" id="calendar-jump-date" min="1900-01-01" max="2100-12-31"><button type="button" onclick="jumpToCalendarDate()">이동</button></div></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
 <section id="board" class="page"><div class="page-head"><h2>📝 가족 게시판</h2><button class="pill" onclick="openForm('post')">+ 글쓰기</button></div><div id="post-list"></div></section></main>
-<footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button id="logout-btn" class="quiet" type="button">로그아웃</button></div></div>
+<footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button id="admin-access-btn" class="quiet" type="button" onclick="showAdminLogin()">관리자 로그인</button><button id="logout-btn" class="quiet" type="button" style="display:none">로그아웃</button></div></div>
 <nav class="nav"><button data-tab="home" class="active" onclick="page('home')"><span>🏠</span>홈</button><button data-tab="chat" onclick="page('chat')"><span>💬</span>채팅</button><button data-tab="photos" onclick="page('photos')"><span>📸</span>사진첩</button><button data-tab="calendar" onclick="page('calendar')"><span>🗓️</span>일정</button><button data-tab="board" onclick="page('board')"><span>📝</span>게시판</button></nav>
 <div id="chat-menu" class="chat-menu-backdrop" onclick="if(event.target===this)closeChatMenu()"><div class="chat-menu-sheet" role="dialog" aria-modal="true" aria-label="메시지 관리"><div class="meta" id="chat-menu-summary"></div><button onclick="chatMenuEdit()">✏️ 메시지·날짜 수정</button><button onclick="chatMenuDelete()" class="danger">🗑️ 메시지 삭제</button><button onclick="closeChatMenu()">취소</button></div></div>
-<div id="overlay" class="overlay" onclick="if(event.target===this)closeForm()"><div class="modal"><div class="modal-title"><h2 id="modal-title">작성하기</h2><button class="x" onclick="closeForm()">×</button></div><form id="entry-form" class="stack" onsubmit="saveForm(event)"><div id="field-author"><label class="label">작성자</label><select id="form-author"></select></div><div id="field-title"><label class="label">제목</label><input id="form-title" class="field" maxlength="120" placeholder="제목 입력"></div><div id="field-date"><label class="label">날짜</label><input id="form-date" class="field" type="date"></div><div id="field-chat-datetime" class="hide"><label class="label" for="form-chat-datetime">메시지 날짜 · 시간</label><input class="field" id="form-chat-datetime" type="datetime-local"></div><div id="field-person"><label class="label">사진첩 분류</label><select id="form-person"></select></div><div id="field-body"><label class="label" id="body-label">내용</label><textarea id="form-body" class="area" placeholder="내용을 적어주세요"></textarea></div><div id="field-file"><label class="label">사진 (최대 8MB)</label><input id="form-file" class="field" type="file" accept="image/*"><p class="notice">사진은 비공개 클라우드에 저장되며 관리자만 볼 수 있어요.</p></div><div class="btnline"><button type="button" class="secondary" onclick="closeForm()">취소</button><button class="solid" type="submit">저장하기</button></div></form></div></div>
+<div id="overlay" class="overlay" onclick="if(event.target===this)closeForm()"><div class="modal"><div class="modal-title"><h2 id="modal-title">작성하기</h2><button class="x" onclick="closeForm()">×</button></div><form id="entry-form" class="stack" onsubmit="saveForm(event)"><div id="field-author"><label class="label">작성자</label><select id="form-author"></select></div><div id="field-title"><label class="label">제목</label><input id="form-title" class="field" maxlength="120" placeholder="제목 입력"></div><div id="field-date"><label class="label">날짜</label><input id="form-date" class="field" type="date"></div><div id="field-chat-datetime" class="hide"><label class="label" for="form-chat-datetime">메시지 날짜 · 시간</label><input class="field" id="form-chat-datetime" type="datetime-local"></div><div id="field-person"><label class="label">사진첩 분류</label><select id="form-person"></select></div><div id="field-body"><label class="label" id="body-label">내용</label><textarea id="form-body" class="area" placeholder="내용을 적어주세요"></textarea></div><div id="field-file"><label class="label">사진 (최대 8MB)</label><input id="form-file" class="field" type="file" accept="image/*"><p class="notice">업로드한 사진은 방문자에게도 공개됩니다.</p></div><div class="btnline"><button type="button" class="secondary" onclick="closeForm()">취소</button><button class="solid" type="submit">저장하기</button></div></form></div></div>
 </div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
@@ -81,31 +88,67 @@ let signedPhotos={};
 let isAdmin=false;
 const tables={chat:'chats',post:'posts',event:'events',photo:'photos'};
 const notify=(message)=>{document.getElementById('connection-notice').textContent=message;};
-function toggleLogin(show){document.getElementById('auth-lock').style.display=show?'flex':'none';document.getElementById('app-shell').style.display=show?'none':'block';}
-async function login(e){e.preventDefault();const email=document.getElementById('auth-email').value.trim();const password=document.getElementById('auth-password').value;document.getElementById('auth-error').textContent='로그인 중...';const {error}=await db.auth.signInWithPassword({email,password});if(error){document.getElementById('auth-error').textContent='로그인 실패: '+error.message;return;}await startup();}
-async function logout(){await db.auth.signOut();isAdmin=false;toggleLogin(true);}
-async function startup(){const {data:sessionData}=await db.auth.getUser();if(!sessionData.user){isAdmin=false;toggleLogin(true);return;}
- const {data:ok,error:checkError}=await db.rpc('is_sorotte_admin');if(checkError||!ok){isAdmin=false;document.getElementById('auth-error').textContent='이 계정은 관리자 권한이 없습니다.';await db.auth.signOut();toggleLogin(true);return;}
- isAdmin=true;toggleLogin(false);await refresh();await seedFixturesOnFirstLogin();await seedSchoolEventsOnFirstLogin();await cleanOldEventNotes();}
-async function refresh(){if(!isAdmin)return;notify('동기화 중...');const {data:rows,error}=await db.from('sorotte_items').select('*').order('created_at',{ascending:true});
+function toggleLogin(show){
+ document.getElementById('auth-lock').style.display=show?'flex':'none';
+ document.getElementById('app-shell').style.display=show?'none':'block';
+}
+function updateAdminUI(){
+ document.body.classList.toggle('is-admin',isAdmin);
+ document.getElementById('admin-access-btn').style.display=isAdmin?'none':'inline-block';
+ document.getElementById('logout-btn').style.display=isAdmin?'inline-block':'none';
+}
+function showAdminLogin(){toggleLogin(true)}
+async function login(e){
+ e.preventDefault();
+ const email=document.getElementById('auth-email').value.trim();
+ const password=document.getElementById('auth-password').value;
+ document.getElementById('auth-error').textContent='로그인 중...';
+ const {error}=await db.auth.signInWithPassword({email,password});
+ if(error){document.getElementById('auth-error').textContent='로그인 실패: '+error.message;return;}
+ document.getElementById('auth-error').textContent='';
+ await startup();
+}
+async function logout(){
+ await db.auth.signOut();isAdmin=false;updateAdminUI();toggleLogin(false);await refresh();
+}
+async function startup(){
+ const {data:sessionData}=await db.auth.getUser();
+ isAdmin=false;
+ if(sessionData?.user){
+  const {data:ok,error:checkError}=await db.rpc('is_sorotte_admin');
+  isAdmin=!!ok&&!checkError;
+ }
+ updateAdminUI();
+ toggleLogin(false);
+ await refresh();
+ if(isAdmin){await seedFixturesOnFirstLogin();await seedSchoolEventsOnFirstLogin();await cleanOldEventNotes();}
+}
+async function refresh(){notify('동기화 중...');const {data:rows,error}=await db.from('sorotte_items').select('*').order('created_at',{ascending:true});
  if(error){notify('데이터를 불러오지 못했어요. SQL 설정을 확인해 주세요: '+error.message);return;}
  data={chats:[],posts:[],events:[],photos:[]};signedPhotos={};
  for(const row of rows){const key=tables[row.kind];if(!key)continue;const x={id:row.id,author:row.author,title:row.title,body:row.body,person:row.person,date:row.entry_date,created:row.created_at,photo_path:row.photo_path};data[key].push(x);}
  const photos=data.photos.filter(x=>x.photo_path);
- if(photos.length){const signed=await Promise.all(photos.map(x=>db.storage.from('sorotte-photos').createSignedUrl(x.photo_path,3600)));signed.forEach((result,i)=>{photos[i].src=result.data?.signedUrl||'';});}
+ if(photos.length){
+  if(isAdmin){
+    const signed=await Promise.all(photos.map(x=>db.storage.from('sorotte-photos').createSignedUrl(x.photo_path,3600)));
+    signed.forEach((result,i)=>{photos[i].src=result.data?.signedUrl||db.storage.from('sorotte-photos').getPublicUrl(photos[i].photo_path).data.publicUrl;});
+  }else{
+    photos.forEach(x=>{x.src=db.storage.from('sorotte-photos').getPublicUrl(x.photo_path).data.publicUrl;});
+  }
+ }
  notify('동기화됨');render();}
-let tab='home',filter='전체',formType='',editing=null,month=0,year=2037,selectedCalendarDate=null;
+let tab='home',filter='전체',formType='',editing=null,month=9,year=2037,selectedCalendarDate='2037-10-21';
 function save(){return true}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const stamp=s=>new Date(s).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();const sort=(arr)=>[...arr].sort((a,b)=>new Date(b.created||b.date)-new Date(a.created||a.date));
 let currentFamily=localStorage.getItem('sorotte_selected_family')||people[0];
 if(!people.includes(currentFamily))currentFamily=people[0];
 function selectFamily(name){if(!people.includes(name))return;currentFamily=name;localStorage.setItem('sorotte_selected_family',name);document.getElementById('family-profile').value=name;renderChat();}
 let chatMenuId=null,pressTimer=null,pressStart=null,suppressClick=false;
-function openChatMenu(id){clearTimeout(pressTimer);chatMenuId=id;const item=data.chats.find(x=>x.id===id);if(!item)return;document.getElementById('chat-menu-summary').textContent=`${item.author} · ${stamp(item.created)}`;document.getElementById('chat-menu').classList.add('show');}
+function openChatMenu(id){if(!isAdmin)return;clearTimeout(pressTimer);chatMenuId=id;const item=data.chats.find(x=>x.id===id);if(!item)return;document.getElementById('chat-menu-summary').textContent=`${item.author} · ${stamp(item.created)}`;document.getElementById('chat-menu').classList.add('show');}
 function closeChatMenu(){document.getElementById('chat-menu').classList.remove('show');chatMenuId=null;}
 function chatMenuEdit(){const id=chatMenuId;closeChatMenu();if(id)editItem('chat',id);}
 function chatMenuDelete(){const id=chatMenuId;closeChatMenu();if(id)removeItem('chat',id);}
-function bindChatHold(){for(const el of document.querySelectorAll('#chat-list .message[data-message-id]')){
+function bindChatHold(){if(!isAdmin)return;for(const el of document.querySelectorAll('#chat-list .message[data-message-id]')){
  const id=el.dataset.messageId;
  el.addEventListener('contextmenu',e=>{e.preventDefault();openChatMenu(id);});
  el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;clearTimeout(pressTimer);pressStart={x:e.clientX,y:e.clientY};pressTimer=setTimeout(()=>{suppressClick=true;openChatMenu(id);},550);});
@@ -121,7 +164,7 @@ function renderChat(){
  document.getElementById('chat-list').innerHTML=data.chats.length?[...data.chats].sort((a,b)=>new Date(a.created)-new Date(b.created)).map(x=>`<div class="message ${x.author===currentFamily?'mine':''}" data-message-id="${x.id}"><span class="avatar">${emojis[x.author]||'💗'}</span><div class="msg-content"><div class="msg-name">${esc(x.author)} <span class="meta">${stamp(x.created)}</span></div><div class="bubble">${esc(x.body)}</div></div></div>`).join(''):empty('💬','아직 메시지가 없어요.<br>첫 번째 가족 채팅을 남겨보세요!');
  bindChatHold();
 }
-async function sendChat(){const body=document.getElementById('chat-text').value.trim(),author=currentFamily;if(!body)return;
+async function sendChat(){if(!isAdmin)return;const body=document.getElementById('chat-text').value.trim(),author=currentFamily;if(!body)return;
  const {error}=await db.from('sorotte_items').insert({kind:'chat',body,author});if(error){alert('메시지 저장 실패: '+error.message);return;}
  document.getElementById('chat-text').value='';await refresh();setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),50);}
 
@@ -256,16 +299,16 @@ function localDateTime(value){
  const pad=n=>String(n).padStart(2,'0');
  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-const fields=['author','title','date','person','body','file'];function openForm(kind,item){formType=kind;editing=item?.id||null;document.getElementById('modal-title').textContent=(item?'수정하기':{photo:'사진 올리기',event:'일정 추가',post:'게시글 작성',chat:'메시지 수정'}[kind]);const shown={photo:['title','date','person','file'],event:['title','date','body'],post:['author','title','body'],chat:['author','body']}[kind];fields.forEach(x=>document.getElementById('field-'+x).classList.toggle('hide',!shown.includes(x)));document.getElementById('field-chat-datetime').classList.toggle('hide',kind!=='chat');document.getElementById('form-chat-datetime').value=localDateTime(item?.created);document.getElementById('form-title').value=item?.title||'';document.getElementById('form-body').value=item?.body||'';document.getElementById('form-date').value=item?.date||`${year}-${String(month+1).padStart(2,'0')}-01`;document.getElementById('form-author').value=item?.author||people[0];document.getElementById('form-person').value=item?.person||'가족 전체';document.getElementById('form-file').value='';document.getElementById('field-file').querySelector('.label').textContent=item?'사진 바꾸기 (선택 사항)':'사진 (최대 8MB)';document.getElementById('overlay').classList.add('open')}
+const fields=['author','title','date','person','body','file'];function openForm(kind,item){if(!isAdmin)return;formType=kind;editing=item?.id||null;document.getElementById('modal-title').textContent=(item?'수정하기':{photo:'사진 올리기',event:'일정 추가',post:'게시글 작성',chat:'메시지 수정'}[kind]);const shown={photo:['title','date','person','file'],event:['title','date','body'],post:['author','title','body'],chat:['author','body']}[kind];fields.forEach(x=>document.getElementById('field-'+x).classList.toggle('hide',!shown.includes(x)));document.getElementById('field-chat-datetime').classList.toggle('hide',kind!=='chat');document.getElementById('form-chat-datetime').value=localDateTime(item?.created);document.getElementById('form-title').value=item?.title||'';document.getElementById('form-body').value=item?.body||'';document.getElementById('form-date').value=item?.date||selectedCalendarDate||`${year}-${String(month+1).padStart(2,'0')}-01`;document.getElementById('form-author').value=item?.author||people[0];document.getElementById('form-person').value=item?.person||'가족 전체';document.getElementById('form-file').value='';document.getElementById('field-file').querySelector('.label').textContent=item?'사진 바꾸기 (선택 사항)':'사진 (최대 8MB)';document.getElementById('overlay').classList.add('open')}
 function closeForm(){document.getElementById('overlay').classList.remove('open');editing=null}
 function editItem(kind,id){const key={chat:'chats',post:'posts',event:'events',photo:'photos'}[kind];openForm(kind,data[key].find(x=>x.id===id))}
-async function removeItem(kind,id){if(!confirm('정말 삭제할까요?'))return;
+async function removeItem(kind,id){if(!isAdmin)return;if(!confirm('정말 삭제할까요?'))return;
  const key=tables[kind],item=data[key].find(x=>x.id===id);const {error}=await db.from('sorotte_items').delete().eq('id',id);
  if(error){alert('삭제 실패: '+error.message);return;}
  if(kind==='photo'&&item?.photo_path)await db.storage.from('sorotte-photos').remove([item.photo_path]);await refresh();}
 
 async function readPhoto(file){if(!file)return null;if(file.size>8*1024*1024)throw Error('사진은 8MB 이하로 선택해 주세요.');return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas'),s=Math.min(1,1200/Math.max(im.width,im.height));cv.width=Math.max(1,Math.round(im.width*s));cv.height=Math.max(1,Math.round(im.height*s));cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);resolve(cv.toDataURL('image/jpeg',.7))};im.onerror=()=>reject(Error('사진을 읽을 수 없어요.'));im.src=reader.result};reader.onerror=()=>reject(Error('사진을 읽을 수 없어요.'));reader.readAsDataURL(file)})}
-async function saveForm(e){e.preventDefault();const type=formType,key=tables[type];let item=editing?data[key].find(x=>x.id===editing):null;
+async function saveForm(e){e.preventDefault();if(!isAdmin)return;const type=formType,key=tables[type];let item=editing?data[key].find(x=>x.id===editing):null;
  const payload={kind:type};if(['post','chat'].includes(type))payload.author=document.getElementById('form-author').value;
  if(['photo','event','post'].includes(type))payload.title=document.getElementById('form-title').value.trim();
  if(['photo','event'].includes(type))payload.entry_date=document.getElementById('form-date').value;
@@ -290,8 +333,8 @@ async function saveForm(e){e.preventDefault();const type=formType,key=tables[typ
 for(const id of ['family-profile','form-author'])document.getElementById(id).innerHTML=people.map(p=>`<option value="${p}">${emojis[p]} ${p}</option>`).join('');document.getElementById('family-profile').value=currentFamily;document.getElementById('form-person').innerHTML=['가족 전체',...people].map(p=>`<option value="${p}">${emojis[p]} ${p}</option>`).join('');
 document.getElementById('auth-form').addEventListener('submit',login);
 document.getElementById('logout-btn').addEventListener('click',logout);
-db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){isAdmin=false;toggleLogin(true);}});
-window.addEventListener('focus',()=>{if(isAdmin)refresh()});
-startup().catch(err=>{document.getElementById('auth-error').textContent='연결 오류: '+err.message+' · Safari에서 웹사이트 주소로 열어 주세요.';toggleLogin(true);});
+db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){isAdmin=false;updateAdminUI();toggleLogin(false);refresh();}});
+window.addEventListener('focus',()=>{refresh()});
+startup().catch(err=>{notify('연결 오류: '+err.message);toggleLogin(false);});
 </script>
 </body></html>
