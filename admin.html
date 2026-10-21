@@ -46,6 +46,15 @@ body:not(.is-admin) .actions,
 body:not(.is-admin) .fixture-controls,
 body:not(.is-admin) .school-controls {display:none!important}
 body:not(.is-admin) .message {user-select:text;-webkit-user-select:text}
+.photo-like-row{margin-top:9px;display:flex;align-items:center;justify-content:flex-start}
+.photo-like{border:1px solid #f1c9d7;background:#fff7fa;color:#a77c8d;padding:6px 11px;border-radius:999px;font-size:13px;display:inline-flex;gap:6px;align-items:center;transition:background .15s}
+.photo-like.liked{background:#ffe3eb;border-color:#eaa0b8;color:#d85b87;font-weight:700}
+.photo-like:disabled{opacity:.6}
+
+/* 방문자 참여 */
+.nav{overflow-x:auto;justify-content:space-around;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{flex:0 0 auto;min-width:58px;padding-left:8px;padding-right:8px}
+.community-intro{font-size:13px;color:#937987;line-height:1.7;margin:3px 0 18px}.community-form{background:white;border:1px solid #f4dce5;border-radius:18px;padding:16px;margin:0 0 20px;display:grid;gap:10px}
+.community-form label{font-size:12px;font-weight:700;color:#aa6b84}.community-form input,.community-form textarea,.community-form select{width:100%;border:1px solid #ead6df;border-radius:11px;padding:12px;font:inherit;color:var(--ink);background:#fffbfd}.community-form textarea{min-height:92px;resize:vertical}.community-form button,.moderation button{border:0;background:#e87b9d;color:white;border-radius:11px;padding:11px 14px;font-weight:700}.community-form button:disabled{opacity:.55}.community-entry{margin-bottom:13px}.community-entry .text{white-space:pre-wrap;overflow-wrap:anywhere}.community-reply{margin-top:14px;background:#fff0f5;border-left:3px solid #e87b9d;border-radius:10px;padding:12px;font-size:13px}.community-reply b{color:#ba6685}.community-reply p{white-space:pre-wrap;margin:7px 0 0;overflow-wrap:anywhere}.moderation{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.moderation button{font-size:12px;padding:8px 11px}.moderation button.secondary{background:#f8e6ed;color:#975a74}.community-status{font-size:12px;color:#987987}.community-empty{padding:26px;text-align:center;color:#a38a98}.community-entry.pending{border:1px dashed #e6b7c9}
 </style>
 <style id="calendar-jump-styles">
 .calendar-jump-trigger{border:0;background:transparent;color:var(--ink);font-weight:700;font-size:16px;padding:9px 12px;border-radius:12px;cursor:pointer}
@@ -71,9 +80,10 @@ body:not(.is-admin) .message {user-select:text;-webkit-user-select:text}
 <main class="content"><section id="chat" class="page"><div class="page-head"><h2>💬 가족 채팅</h2><span class="count" id="chat-count"></span></div><div id="chat-list"></div><div class="chat-compose"><div class="chat-input-row"><textarea class="area" id="chat-text" rows="1" placeholder="메시지 입력..."></textarea><button class="solid chat-send" onclick="sendChat()" aria-label="메시지 보내기">➤</button></div></div></section>
 <section id="photos" class="page"><div class="page-head"><h2>📸 가족 사진첩</h2><button class="pill" onclick="openForm('photo')">+ 사진 올리기</button></div><div class="chips" id="photo-filter"></div><div id="photo-list" class="photo-grid"></div></section>
 <section id="calendar" class="page"><div class="page-head"><h2>🗓️ 가족 일정</h2><button class="pill" onclick="openForm('event')">+ 일정 추가</button></div><div class="card"><div class="date-head"><button onclick="changeMonth(-1)">‹</button><button type="button" id="month-title" class="calendar-jump-trigger" onclick="toggleCalendarJump()" aria-label="연도 월 날짜 선택">2037년 10월 21일 <span aria-hidden="true">⌄</span></button><button onclick="changeMonth(1)">›</button></div><div class="calendar-jump hide" id="calendar-jump"><label for="calendar-jump-date">이동할 날짜 선택</label><div class="calendar-jump-row"><input type="date" id="calendar-jump-date" min="1900-01-01" max="2100-12-31"><button type="button" onclick="jumpToCalendarDate()">이동</button></div></div><div class="calendar" id="calendar-grid"></div></div><div class="section-head"><h2 id="event-list-heading">이번 달 일정</h2><button class="quiet hide" id="show-month-events" type="button" onclick="showAllMonthEvents()">월 전체 보기</button></div><div id="event-list"></div></section>
-<section id="board" class="page"><div class="page-head"><h2>📝 가족 게시판</h2><button class="pill" onclick="openForm('post')">+ 글쓰기</button></div><div id="post-list"></div></section></main>
+<section id="board" class="page"><div class="page-head"><h2>📝 가족 게시판</h2><button class="pill" onclick="openForm('post')">+ 글쓰기</button></div><div id="post-list"></div></section><section id="guestbook" class="page"><div class="page-head"><h2>💌 방문자 방명록</h2></div><p class="community-intro">우리 여섯에게 하고 싶은 말을 남겨주세요. 작성한 글은 관리자 확인 후 공개돼요.</p><form class="community-form" id="guestbook-form" onsubmit="submitCommunity(event,'guestbook')"><label for="guest-name">닉네임</label><input id="guest-name" maxlength="24" placeholder="어떤 이름으로 남길까요?" required><label for="guest-message">남길 이야기</label><textarea id="guest-message" maxlength="500" placeholder="가족에게 전하고 싶은 한마디 ♡" required></textarea><button type="submit">💌 방명록 남기기</button><div class="community-status" id="guestbook-status"></div></form><div id="guestbook-list"></div></section>
+<section id="questions" class="page"><div class="page-head"><h2>❓ 가족에게 질문하기</h2></div><p class="community-intro">궁금한 걸 물어봐 주세요. 가족의 답변과 함께 공개될 수 있어요.</p><form class="community-form" id="question-form" onsubmit="submitCommunity(event,'question')"><label for="question-name">닉네임</label><input id="question-name" maxlength="24" placeholder="질문하는 사람" required><label for="question-to">누구에게 물어볼까요?</label><select id="question-to"><option>가족 전체</option><option>사쿠야</option><option>유우시</option><option>치아키</option><option>유우키</option><option>아쿠토</option><option>쿄우야</option></select><label for="question-message">질문</label><textarea id="question-message" maxlength="500" placeholder="궁금한 점을 남겨주세요 ♡" required></textarea><button type="submit">❓ 질문 보내기</button><div class="community-status" id="question-status"></div></form><div id="question-list"></div></section></main>
 <footer class="foot">made with ♡ for our family · 6人揃って</footer><div style="padding:0 18px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#967a88"><span id="connection-notice">연결 확인 중...</span><button id="admin-access-btn" class="quiet" type="button" onclick="showAdminLogin()">관리자 로그인</button><button id="logout-btn" class="quiet" type="button" style="display:none">로그아웃</button></div></div>
-<nav class="nav"><button data-tab="home" class="active" onclick="page('home')"><span>🏠</span>홈</button><button data-tab="chat" onclick="page('chat')"><span>💬</span>채팅</button><button data-tab="photos" onclick="page('photos')"><span>📸</span>사진첩</button><button data-tab="calendar" onclick="page('calendar')"><span>🗓️</span>일정</button><button data-tab="board" onclick="page('board')"><span>📝</span>게시판</button></nav>
+<nav class="nav"><button data-tab="home" class="active" onclick="page('home')"><span>🏠</span>홈</button><button data-tab="chat" onclick="page('chat')"><span>💬</span>채팅</button><button data-tab="photos" onclick="page('photos')"><span>📸</span>사진첩</button><button data-tab="calendar" onclick="page('calendar')"><span>🗓️</span>일정</button><button data-tab="board" onclick="page('board')"><span>📝</span>게시판</button><button data-tab="guestbook" onclick="page('guestbook')"><span>💌</span>방명록</button><button data-tab="questions" onclick="page('questions')"><span>❓</span>질문</button></nav>
 <div id="chat-menu" class="chat-menu-backdrop" onclick="if(event.target===this)closeChatMenu()"><div class="chat-menu-sheet" role="dialog" aria-modal="true" aria-label="메시지 관리"><div class="meta" id="chat-menu-summary"></div><button onclick="chatMenuEdit()">✏️ 메시지·날짜 수정</button><button onclick="chatMenuDelete()" class="danger">🗑️ 메시지 삭제</button><button onclick="closeChatMenu()">취소</button></div></div>
 <div id="overlay" class="overlay" onclick="if(event.target===this)closeForm()"><div class="modal"><div class="modal-title"><h2 id="modal-title">작성하기</h2><button class="x" onclick="closeForm()">×</button></div><form id="entry-form" class="stack" onsubmit="saveForm(event)"><div id="field-author"><label class="label">작성자</label><select id="form-author"></select></div><div id="field-title"><label class="label">제목</label><input id="form-title" class="field" maxlength="120" placeholder="제목 입력"></div><div id="field-date"><label class="label">날짜</label><input id="form-date" class="field" type="date"></div><div id="field-chat-datetime" class="hide"><label class="label" for="form-chat-datetime">메시지 날짜 · 시간</label><input class="field" id="form-chat-datetime" type="datetime-local"></div><div id="field-person"><label class="label">사진첩 분류</label><select id="form-person"></select></div><div id="field-body"><label class="label" id="body-label">내용</label><textarea id="form-body" class="area" placeholder="내용을 적어주세요"></textarea></div><div id="field-file"><label class="label">사진 (최대 8MB)</label><input id="form-file" class="field" type="file" accept="image/*"><p class="notice">업로드한 사진은 방문자에게도 공개됩니다.</p></div><div class="btnline"><button type="button" class="secondary" onclick="closeForm()">취소</button><button class="solid" type="submit">저장하기</button></div></form></div></div>
 </div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -86,6 +96,32 @@ if(!window.supabase){document.getElementById('auth-error').textContent='앱을 �
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 let data={chats:[],posts:[],events:[],photos:[]};
 let signedPhotos={};
+let photoLikes={};
+const VISITOR_KEY='sorotte_like_visitor_v1';
+function visitorId(){
+ try{let id=localStorage.getItem(VISITOR_KEY);if(!id){id=crypto.randomUUID();localStorage.setItem(VISITOR_KEY,id);}return id;}
+ catch(e){if(!window._temporaryVisitorId)window._temporaryVisitorId=crypto.randomUUID();return window._temporaryVisitorId;}
+}
+function photoLikeButton(x){const state=photoLikes[x.id]||{count:0,liked:false};return `<button type="button" class="photo-like ${state.liked?'liked':''}" aria-pressed="${state.liked}" aria-label="${esc(x.title||'사진')} 좋아요${state.liked?' 취소':''}" onclick="togglePhotoLike('${x.id}',this)">${state.liked?'♥':'♡'} <span>${state.count}</span></button>`;}
+async function loadPhotoLikes(){
+ photoLikes={};
+ const ids=data.photos.map(p=>p.id);if(!ids.length)return;
+ const {data:rows,error}=await db.from('sorotte_photo_likes').select('photo_id,visitor_id').in('photo_id',ids);
+ if(error){console.warn('좋아요 설정 필요:',error.message);return;}
+ const self=visitorId();
+ for(const row of rows||[]){const item=photoLikes[row.photo_id]||(photoLikes[row.photo_id]={count:0,liked:false});item.count++;if(row.visitor_id===self)item.liked=true;}
+}
+const likePending=new Set();
+async function togglePhotoLike(id,button){
+ if(likePending.has(id))return;likePending.add(id);button.disabled=true;
+ const {data:liked,error}=await db.rpc('sorotte_toggle_photo_like',{p_photo_id:id,p_visitor_id:visitorId()});
+ likePending.delete(id);
+ if(error){button.disabled=false;alert('좋아요를 저장하지 못했어요. 먼저 함께 제공된 SQL 파일을 Supabase에서 실행했는지 확인해 주세요.');console.error(error);return;}
+ const state=photoLikes[id]||(photoLikes[id]={count:0,liked:false});
+ state.count=Math.max(0,state.count+(liked?1:-1));state.liked=liked;
+ renderPhotos();
+}
+
 let isAdmin=false;
 const tables={chat:'chats',post:'posts',event:'events',photo:'photos'};
 const notify=(message)=>{document.getElementById('connection-notice').textContent=message;};
@@ -137,7 +173,39 @@ async function refresh(){notify('동기화 중...');const {data:rows,error}=awai
     photos.forEach(x=>{x.src=db.storage.from('sorotte-photos').getPublicUrl(x.photo_path).data.publicUrl;});
   }
  }
- notify('동기화됨');render();}
+ await loadPhotoLikes();await loadCommunity();notify('동기화됨');render();}
+
+// Visitor community: only approved entries are visible publicly.
+let communityEntries=[];
+async function loadCommunity(){
+ const {data:rows,error}=await db.from('sorotte_community').select('id,kind,nickname,recipient,body,approved,reply_author,reply_body,created_at').order('created_at',{ascending:false}).limit(300);
+ if(error){console.warn('방명록·질문 설정 필요:',error.message);communityEntries=[];return;}
+ communityEntries=rows||[];
+}
+function renderCommunity(){
+ for(const kind of ['guestbook','question']){
+  const target=document.getElementById(kind==='guestbook'?'guestbook-list':'question-list');if(!target)continue;
+  const items=communityEntries.filter(x=>x.kind===kind);
+  target.innerHTML=items.length?items.map(x=>{
+   const actionButtons=isAdmin?`<div class="moderation"><button class="secondary" onclick="setCommunityApproval('${x.id}',${!x.approved})">${x.approved?'비공개':'공개 승인'}</button><button class="secondary" onclick="replyCommunity('${x.id}')">${x.reply_body?'답장 수정':'답장하기'}</button><button class="secondary" onclick="deleteCommunity('${x.id}')">삭제</button></div>`:'';
+   const replyPart=x.reply_body?`<div class="community-reply"><b>${emojis[x.reply_author]||'💗'} ${esc(x.reply_author||'가족')}의 답장</b><p>${esc(x.reply_body)}</p></div>`:'';
+   return `<article class="card community-entry ${x.approved?'':'pending'}"><div class="person"><span class="avatar">${kind==='question'?'❓':'💌'}</span><div><b>${esc(x.nickname)}</b><div class="meta">${kind==='question'?'받는 사람: '+esc(x.recipient||'가족 전체')+' · ':''}${stamp(x.created_at)}${x.approved?'':' · 승인 대기'}</div></div></div><div class="text" style="margin-top:12px">${esc(x.body)}</div>${replyPart}${actionButtons}</article>`;
+  }).join(''):'<div class="community-empty">'+(kind==='question'?'아직 공개된 질문이 없어요.':'아직 공개된 방명록이 없어요.')+'</div>';
+ }
+}
+async function submitCommunity(e,kind){
+ e.preventDefault();const prefix=kind==='question'?'question':'guest';const form=e.currentTarget;const button=form.querySelector('button[type="submit"]');const status=document.getElementById(kind==='question'?'question-status':'guestbook-status');
+ const nickname=document.getElementById(prefix+'-name').value.trim();const body=document.getElementById(prefix+'-message').value.trim();const recipient=kind==='question'?document.getElementById('question-to').value:'가족 전체';
+ if(nickname.length<1||nickname.length>24||body.length<2||body.length>500)return;
+ button.disabled=true;status.textContent='보내는 중...';
+ try{const {error}=await db.rpc('sorotte_submit_community',{p_kind:kind,p_nickname:nickname,p_recipient:recipient,p_body:body,p_visitor_id:visitorId()});if(error)throw error;status.textContent='접수됐어요! 관리자 승인 후 공개됩니다. ♡';form.reset();}
+ catch(err){status.textContent='전송하지 못했어요. 설정을 확인하거나 잠시 후 다시 시도해 주세요.';console.error(err);}
+ finally{button.disabled=false;}
+}
+async function setCommunityApproval(id,approved){if(!isAdmin)return;const {error}=await db.from('sorotte_community').update({approved}).eq('id',id);if(error){alert('변경 실패: '+error.message);return;}await loadCommunity();renderCommunity();}
+async function replyCommunity(id){if(!isAdmin)return;const entry=communityEntries.find(x=>x.id===id);if(!entry)return;const who=prompt('답장할 가족 이름 (사쿠야 / 유우시 / 치아키 / 유우키 / 아쿠토 / 쿄우야)',entry.reply_author||'사쿠야');if(who===null)return;if(!people.includes(who)){alert('가족 이름을 정확히 입력해 주세요.');return;}const reply=prompt('답장을 입력해 주세요. (빈칸 저장은 답장 삭제)',entry.reply_body||'');if(reply===null)return;if(reply.length>1000){alert('답장은 1000자 이하로 작성해 주세요.');return;}const {error}=await db.from('sorotte_community').update({reply_author:reply.trim(),reply_body:reply.trim()||null}).eq('id',id);if(error){alert('답장 저장 실패: '+error.message);return;}await loadCommunity();renderCommunity();}
+async function deleteCommunity(id){if(!isAdmin||!confirm('이 글을 삭제할까요?'))return;const {error}=await db.from('sorotte_community').delete().eq('id',id);if(error){alert('삭제 실패: '+error.message);return;}await loadCommunity();renderCommunity();}
+
 let tab='home',filter='전체',formType='',editing=null,month=9,year=2037,selectedCalendarDate='2037-10-21';
 function save(){return true}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const stamp=s=>new Date(s).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});const uid=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();const sort=(arr)=>[...arr].sort((a,b)=>new Date(b.created||b.date)-new Date(a.created||a.date));
@@ -159,7 +227,7 @@ function bindChatHold(){if(!isAdmin)return;for(const el of document.querySelecto
 }}
 function page(n){tab=n;document.querySelectorAll('.page').forEach(e=>e.classList.toggle('active',e.id===n));document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.tab===n));window.scrollTo({top:0,behavior:'instant'});render()}
 function empty(icon,s){return `<div class="empty"><span class="big">${icon}</span>${s}</div>`}
-function render(){renderChat();renderPhotos();renderCalendar();renderBoard();renderHome()}
+function render(){renderChat();renderPhotos();renderCalendar();renderBoard();renderHome();renderCommunity()}
 function renderChat(){
  document.getElementById('chat-count').textContent=data.chats.length+'개의 메시지';
  document.getElementById('chat-list').innerHTML=data.chats.length?[...data.chats].sort((a,b)=>new Date(a.created)-new Date(b.created)).map(x=>`<div class="message ${x.author===currentFamily?'mine':''}" data-message-id="${x.id}"><span class="avatar">${emojis[x.author]||'💗'}</span><div class="msg-content"><div class="msg-name">${esc(x.author)} <span class="meta">${stamp(x.created)}</span></div><div class="bubble">${esc(x.body)}</div></div></div>`).join(''):empty('💬','아직 메시지가 없어요.<br>첫 번째 가족 채팅을 남겨보세요!');
@@ -169,7 +237,7 @@ async function sendChat(){if(!isAdmin)return;const body=document.getElementById(
  const {error}=await db.from('sorotte_items').insert({kind:'chat',body,author});if(error){alert('메시지 저장 실패: '+error.message);return;}
  document.getElementById('chat-text').value='';await refresh();setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),50);}
 
-function renderPhotos(){const choices=['전체','가족 전체',...people];document.getElementById('photo-filter').innerHTML=choices.map(p=>`<button class="${filter===p?'sel':''}" onclick="setFilter('${p}')">${p==='전체'?'💗 전체':(emojis[p]+' '+p)}</button>`).join('');const arr=sort(data.photos).filter(x=>filter==='전체'||x.person===filter);document.getElementById('photo-list').innerHTML=arr.length?arr.map(x=>`<div class="photo"><img src="${esc(x.src||'')}" alt="${esc(x.title)}"><div class="detail"><strong>${esc(x.title||'우리의 순간')}</strong><span class="meta">${emojis[x.person]||'💗'} ${esc(x.person)} · ${esc(x.date)}</span><div class="actions"><button onclick="editItem('photo','${x.id}')">수정</button><button onclick="removeItem('photo','${x.id}')">삭제</button></div></div></div>`).join(''):empty('🐈📸','아직 사진이 없어요.<br>추억을 한 장씩 채워보세요!')}
+function renderPhotos(){const choices=['전체','가족 전체',...people];document.getElementById('photo-filter').innerHTML=choices.map(p=>`<button class="${filter===p?'sel':''}" onclick="setFilter('${p}')">${p==='전체'?'💗 전체':(emojis[p]+' '+p)}</button>`).join('');const arr=sort(data.photos).filter(x=>filter==='전체'||x.person===filter);document.getElementById('photo-list').innerHTML=arr.length?arr.map(x=>`<div class="photo"><img src="${esc(x.src||'')}" alt="${esc(x.title)}"><div class="detail"><strong>${esc(x.title||'우리의 순간')}</strong><span class="meta">${emojis[x.person]||'💗'} ${esc(x.person)} · ${esc(x.date)}</span><div class="photo-like-row">${photoLikeButton(x)}</div><div class="actions"><button onclick="editItem('photo','${x.id}')">수정</button><button onclick="removeItem('photo','${x.id}')">삭제</button></div></div></div>`).join(''):empty('🐈📸','아직 사진이 없어요.<br>추억을 한 장씩 채워보세요!')}
 function setFilter(x){filter=x;renderPhotos()}
 
 // Fictional FC Tokyo fixtures for the user's 2037 family-world setting.
